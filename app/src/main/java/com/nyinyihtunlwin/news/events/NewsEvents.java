@@ -24,9 +24,19 @@ public class NewsEvents {
 
     public static class RestAPIEvent {
         private String message;
+        private int status;
 
-        public RestAPIEvent(String message) {
+        public RestAPIEvent(String message, int status) {
             this.message = message;
+            this.status = status;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
         }
 
         public String getMessage() {

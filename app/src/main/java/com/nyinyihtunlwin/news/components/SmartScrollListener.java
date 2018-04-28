@@ -1,6 +1,7 @@
 package com.nyinyihtunlwin.news.components;
 
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 
@@ -31,7 +32,7 @@ public class SmartScrollListener extends RecyclerView.OnScrollListener {
 
         visibleItemCount = rv.getLayoutManager().getChildCount();
         totalItemCount = rv.getLayoutManager().getItemCount();
-        pastVisibleItems = ((GridLayoutManager) rv.getLayoutManager()).findFirstVisibleItemPosition();
+        pastVisibleItems = ((LinearLayoutManager) rv.getLayoutManager()).findFirstVisibleItemPosition();
 
         previousDy = currentDy;
     }

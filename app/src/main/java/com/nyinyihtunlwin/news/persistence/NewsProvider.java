@@ -16,7 +16,7 @@ import android.support.annotation.Nullable;
  * Created by Dell on 12/16/2017.
  */
 
-public class MMNewsProvider extends ContentProvider {
+public class NewsProvider extends ContentProvider {
 
     public static final int SOURCE = 200;
     public static final int NEWS = 300;
@@ -27,22 +27,22 @@ public class MMNewsProvider extends ContentProvider {
     static {
         sNewsWithSource_IJ = new SQLiteQueryBuilder();
         sNewsWithSource_IJ.setTables(
-                MMNewsContract.NewsEntry.TABLE_NAME + " INNER JOIN " +
-                        MMNewsContract.SourceEntry.TABLE_NAME +
+                NewsContract.NewsEntry.TABLE_NAME + " INNER JOIN " +
+                        NewsContract.SourceEntry.TABLE_NAME +
                         " ON " +
-                        MMNewsContract.NewsEntry.TABLE_NAME + "." + MMNewsContract.NewsEntry.COLUMN_SOURCE_ID + " = " +
-                        MMNewsContract.SourceEntry.TABLE_NAME + "." + MMNewsContract.SourceEntry.COLUMN_SOURCE_ID
+                        NewsContract.NewsEntry.TABLE_NAME + "." + NewsContract.NewsEntry.COLUMN_SOURCE_ID + " = " +
+                        NewsContract.SourceEntry.TABLE_NAME + "." + NewsContract.SourceEntry.COLUMN_SOURCE_ID
         );
     }
 
-    private MMNewsDBHelper mDBHelper;
+    private NewsDBHelper mDBHelper;
 
     private static UriMatcher buildUriMatcher() {
 
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        uriMatcher.addURI(MMNewsContract.CONTENT_AUTHORITY, MMNewsContract.PATH_SOURCE, SOURCE);
-        uriMatcher.addURI(MMNewsContract.CONTENT_AUTHORITY, MMNewsContract.PATH_NEWS, NEWS);
+        uriMatcher.addURI(NewsContract.CONTENT_AUTHORITY, NewsContract.PATH_SOURCE, SOURCE);
+        uriMatcher.addURI(NewsContract.CONTENT_AUTHORITY, NewsContract.PATH_NEWS, NEWS);
 
 
         return uriMatcher;
@@ -51,9 +51,9 @@ public class MMNewsProvider extends ContentProvider {
     private String getTableName(Uri uri) {
         switch (sUriMatcher.match(uri)) {
             case SOURCE:
-                return MMNewsContract.SourceEntry.TABLE_NAME;
+                return NewsContract.SourceEntry.TABLE_NAME;
             case NEWS:
-                return MMNewsContract.NewsEntry.TABLE_NAME;
+                return NewsContract.NewsEntry.TABLE_NAME;
         }
         return null;
     }
@@ -61,16 +61,16 @@ public class MMNewsProvider extends ContentProvider {
     private Uri getContentUri(Uri uri) {
         switch (sUriMatcher.match(uri)) {
             case SOURCE:
-                return MMNewsContract.SourceEntry.CONTENT_URI;
+                return NewsContract.SourceEntry.CONTENT_URI;
             case NEWS:
-                return MMNewsContract.NewsEntry.CONTENT_URI;
+                return NewsContract.NewsEntry.CONTENT_URI;
         }
         return null;
     }
 
     @Override
     public boolean onCreate() {
-        mDBHelper = new MMNewsDBHelper(getContext());
+        mDBHelper = new NewsDBHelper(getContext());
         return true;
     }
 
@@ -109,9 +109,9 @@ public class MMNewsProvider extends ContentProvider {
         int matchUri = sUriMatcher.match(uri);
         switch (matchUri) {
             case SOURCE:
-                return MMNewsContract.SourceEntry.DIR_TYPE;
+                return NewsContract.SourceEntry.DIR_TYPE;
             case NEWS:
-                return MMNewsContract.NewsEntry.DIR_TYPE;
+                return NewsContract.NewsEntry.DIR_TYPE;
         }
         return null;
     }

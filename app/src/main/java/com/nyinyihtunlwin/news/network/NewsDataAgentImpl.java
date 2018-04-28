@@ -55,7 +55,7 @@ public class NewsDataAgentImpl implements NewsDataAgent {
                     NewsEvents.NewsLoadedEvent event = new NewsEvents.NewsLoadedEvent(newsResponse.getNews());
                     EventBus.getDefault().post(event);
                 } else {
-                    NewsEvents.RestAPIEvent noDataEvent = new NewsEvents.RestAPIEvent("No data.");
+                    NewsEvents.RestAPIEvent noDataEvent = new NewsEvents.RestAPIEvent("No news available.",1);
                     EventBus.getDefault().post(noDataEvent);
                 }
             }

@@ -1,6 +1,11 @@
 package com.nyinyihtunlwin.news.data.vos;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+
 import com.google.gson.annotations.SerializedName;
+import com.nyinyihtunlwin.news.persistence.NewsContract;
 
 public class NewsVO {
 
@@ -79,5 +84,32 @@ public class NewsVO {
 
     public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
+    }
+
+    public ContentValues parseToContentValues() {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NewsContract.NewsEntry.COLUMN_AUTHOR, author);
+        contentValues.put(NewsContract.NewsEntry.COLUMN_TITLE, title);
+        contentValues.put(NewsContract.NewsEntry.COLUMN_DESCRIPTION, description);
+        contentValues.put(NewsContract.NewsEntry.COLUMN_URL, url);
+        contentValues.put(NewsContract.NewsEntry.COLUMN_URL_TO_IMAGE, urlToImage);
+        contentValues.put(NewsContract.NewsEntry.COLUMN_PUBLISHED_AT, publishedAt);
+        contentValues.put(NewsContract.NewsEntry.COLUMN_SOURCE_ID, source.getId());
+
+        return contentValues;
+    }
+
+    public static NewsVO parseFromCursor(Context context, Cursor cursor) {
+        NewsVO news = new NewsVO();
+        news.author = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_AUTHOR));
+        news.title = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_TITLE));
+        news.description = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_DESCRIPTION));
+        news.url = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_URL));
+        news.urlToImage = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_URL_TO_IMAGE));
+        news.publishedAt = cursor.getString(cursor.getColumnIndex(NewsContract.NewsEntry.COLUMN_PUBLISHED_AT));
+
+        news.source = SourceVO.parseFromCursor(cursor);
+        return news;
     }
 }

@@ -3,6 +3,7 @@ package com.nyinyihtunlwin.news;
 import android.app.Application;
 
 import com.nyinyihtunlwin.news.data.models.NewsModel;
+import com.nyinyihtunlwin.news.utils.AppUtils;
 import com.nyinyihtunlwin.news.utils.ConfigUtils;
 
 public class NewsApp extends Application {
@@ -13,5 +14,6 @@ public class NewsApp extends Application {
     public void onCreate() {
         super.onCreate();
         ConfigUtils.initConfigUtils(getApplicationContext());
+        AppUtils.initAppUtils(getApplicationContext());
     }
 }

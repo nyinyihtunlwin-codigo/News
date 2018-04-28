@@ -11,7 +11,7 @@ import retrofit2.Callback;
 public abstract class NewsCallback<T extends BaseResponse> implements Callback<T> {
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        NewsEvents.RestAPIEvent event = new NewsEvents.RestAPIEvent("Can't load data.Try again.");
+        NewsEvents.RestAPIEvent event = new NewsEvents.RestAPIEvent("Can't load data.", 1);
         EventBus.getDefault().post(event);
     }
 }

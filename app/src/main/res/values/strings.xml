@@ -1,6 +1,9 @@
 <resources>
-    <string name="app_name">News</string>
+    <string name="app_name">News For Me</string>
     <string name="action_settings">Settings</string>
     <string name="msg_generic_no_data">No data to show.</string>
     <string name="lbl_refersh">refresh</string>
+    <string name="news">NEWS</string>
+    <string name="headlines">Headlines</string>
+    <string name="title_activity_details">Details</string>
 </resources>

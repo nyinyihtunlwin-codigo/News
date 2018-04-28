@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 import com.nyinyihtunlwin.news.NewsApp;
 
 
-public class MMNewsContract {
+public class NewsContract {
 
     public static final String CONTENT_AUTHORITY = NewsApp.class.getPackage().getName();
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);

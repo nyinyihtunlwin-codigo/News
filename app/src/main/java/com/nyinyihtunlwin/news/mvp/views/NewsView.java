@@ -1,6 +1,7 @@
 package com.nyinyihtunlwin.news.mvp.views;
 
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
+import com.nyinyihtunlwin.news.events.NewsEvents;
 
 import java.util.List;
 
@@ -9,5 +10,5 @@ public interface NewsView {
 
     void showLoading();
 
-    void showPrompt(String message);
+    void showPrompt(NewsEvents.RestAPIEvent event);
 }
