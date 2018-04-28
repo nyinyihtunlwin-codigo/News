@@ -1,5 +1,8 @@
 package com.nyinyihtunlwin.news.data.models;
 
+import com.nyinyihtunlwin.news.network.NewsDataAgentImpl;
+import com.nyinyihtunlwin.news.utils.AppConstants;
+
 public class NewsModel {
 
     private static NewsModel objectInstance;
@@ -12,6 +15,11 @@ public class NewsModel {
     }
 
     private NewsModel() {
-
     }
+
+    public void startLoadingNews() {
+        NewsDataAgentImpl.getObjectInstance().loadNews(AppConstants.API_KEY, 1, "us");
+    }
+
+
 }
