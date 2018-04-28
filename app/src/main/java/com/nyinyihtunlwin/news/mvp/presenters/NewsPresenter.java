@@ -1,5 +1,7 @@
 package com.nyinyihtunlwin.news.mvp.presenters;
 
+import android.content.Context;
+
 import com.nyinyihtunlwin.news.data.models.NewsModel;
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
 import com.nyinyihtunlwin.news.events.NewsEvents;
@@ -12,6 +14,11 @@ import java.util.List;
 
 public class NewsPresenter extends BasePresenter<NewsView> {
 
+    private Context mContext;
+
+    public NewsPresenter(Context context) {
+        this.mContext = context;
+    }
 
     @Override
     public void onStart() {
@@ -31,6 +38,7 @@ public class NewsPresenter extends BasePresenter<NewsView> {
     @Subscribe
     public void onNewsLoaded(NewsEvents.NewsLoadedEvent event) {
         List<NewsVO> news = event.getNews();
+        NewsModel.getInstance().saveToDb(mContext, news);
     }
 
     @Subscribe
