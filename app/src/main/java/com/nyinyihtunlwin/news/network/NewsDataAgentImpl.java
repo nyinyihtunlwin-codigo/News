@@ -2,7 +2,10 @@ package com.nyinyihtunlwin.news.network;
 
 import com.google.gson.Gson;
 import com.nyinyihtunlwin.news.events.NewsEvents;
+import com.nyinyihtunlwin.news.events.SearchEvents;
+import com.nyinyihtunlwin.news.events.SourcesEvents;
 import com.nyinyihtunlwin.news.network.responses.NewsResponse;
+import com.nyinyihtunlwin.news.network.responses.SourceResponse;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -55,7 +58,43 @@ public class NewsDataAgentImpl implements NewsDataAgent {
                     NewsEvents.NewsLoadedEvent event = new NewsEvents.NewsLoadedEvent(newsResponse.getNews());
                     EventBus.getDefault().post(event);
                 } else {
-                    NewsEvents.RestAPIEvent noDataEvent = new NewsEvents.RestAPIEvent("No news available.",1);
+                    NewsEvents.RestAPIEvent noDataEvent = new NewsEvents.RestAPIEvent("No news available.", 1);
+                    EventBus.getDefault().post(noDataEvent);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void searchNews(String apiKey, int pageNo, String query) {
+        Call<NewsResponse> loadNewsCall = newsAPI.searchNews(apiKey, pageNo, query);
+        loadNewsCall.enqueue(new NewsCallback<NewsResponse>() {
+            @Override
+            public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
+                NewsResponse newsResponse = response.body();
+                if (newsResponse != null && newsResponse.getNews().size() > 0) {
+                    SearchEvents.NewsLoadedEvent event = new SearchEvents.NewsLoadedEvent(newsResponse.getNews());
+                    EventBus.getDefault().post(event);
+                } else {
+                    SearchEvents.RestAPIEvent noDataEvent = new SearchEvents.RestAPIEvent("No news available.");
+                    EventBus.getDefault().post(noDataEvent);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void loadSources(String apiKey) {
+        Call<SourceResponse> loadNewsCall = newsAPI.loadSources(apiKey, "us", "en");
+        loadNewsCall.enqueue(new NewsCallback<SourceResponse>() {
+            @Override
+            public void onResponse(Call<SourceResponse> call, Response<SourceResponse> response) {
+                SourceResponse newsResponse = response.body();
+                if (newsResponse != null && newsResponse.getSources().size() > 0) {
+                    SourcesEvents.SourceLoadedEvent event = new SourcesEvents.SourceLoadedEvent(newsResponse.getSources());
+                    EventBus.getDefault().post(event);
+                } else {
+                    SourcesEvents.RestAPIEvent noDataEvent = new SourcesEvents.RestAPIEvent("Can't load sources.");
                     EventBus.getDefault().post(noDataEvent);
                 }
             }

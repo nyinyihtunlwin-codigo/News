@@ -5,8 +5,11 @@ import android.database.Cursor;
 
 import com.nyinyihtunlwin.news.data.models.NewsModel;
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
+import com.nyinyihtunlwin.news.data.vos.SourceVO;
 import com.nyinyihtunlwin.news.events.NewsEvents;
+import com.nyinyihtunlwin.news.events.SourcesEvents;
 import com.nyinyihtunlwin.news.mvp.views.NewsView;
+import com.nyinyihtunlwin.news.utils.ConfigUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -35,6 +38,7 @@ public class NewsPresenter extends BasePresenter<NewsView> {
     public void onStartLoadingNews() {
         mView.showLoading();
         NewsModel.getInstance().startLoadingNews();
+        onLoadSources();
     }
 
     @Subscribe
@@ -59,14 +63,29 @@ public class NewsPresenter extends BasePresenter<NewsView> {
         } else {
             mView.showLoading();
             NewsModel.getInstance().startLoadingNews();
+            onLoadSources();
         }
     }
 
     public void tapOnForceRefresh() {
+        onLoadSources();
         NewsModel.getInstance().onForceRefresh();
     }
 
     public void onListEndReached() {
         NewsModel.getInstance().loadMoreNews();
+    }
+
+    public void onLoadSources() {
+        if (!ConfigUtils.getObjInstance().loadSource()) {
+            NewsModel.getInstance().loadSources();
+        }
+    }
+
+    @Subscribe
+    public void onSourcesLoaded(SourcesEvents.SourceLoadedEvent event) {
+        List<SourceVO> sources = event.getSources();
+        NewsModel.getInstance().saveSourcesToDb(mContext, sources);
+        ConfigUtils.getObjInstance().saveSource(true);
     }
 }

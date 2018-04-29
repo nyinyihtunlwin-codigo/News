@@ -2,12 +2,12 @@ package com.nyinyihtunlwin.news.mvp.presenters;
 
 import android.content.Context;
 
+import com.nyinyihtunlwin.news.data.models.NewsModel;
+import com.nyinyihtunlwin.news.events.SearchEvents;
 import com.nyinyihtunlwin.news.mvp.views.SearchView;
-import com.nyinyihtunlwin.news.utils.ConfigUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
 
 
 public class SearchPresenter extends BasePresenter<SearchView> {
@@ -22,7 +22,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     public void onTapSearch(String query) {
         mView.showLoding();
         mQuery = query;
-        SearchResultModel.getInstance().startSearching(query);
+        NewsModel.getInstance().startSearching(query);
     }
 
     @Override
@@ -31,14 +31,13 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     @Subscribe
-    public void onLoadedSearchResults(SearchEvents.SearchResultsDataLoadedEvent event) {
-        ConfigUtils.getObjInstance().saveSearchResultPageIndex(event.getLoadedPageIndex());
-        mView.displaySearchResults(event.getLoadedSearchResults());
+    public void onLoadedSearchResults(SearchEvents.NewsLoadedEvent event) {
+        mView.displaySearchResults(event.getNews());
     }
 
     @Subscribe
-    public void onErrorInvokingAPILoaded(SearchEvents.ErrorInvokingAPIEvent event) {
-        mView.showErrorMsg(event.getErrorMsg());
+    public void onErrorInvokingAPILoaded(SearchEvents.RestAPIEvent event) {
+        mView.showErrorMsg(event.getMessage());
     }
 
     @Override
@@ -47,11 +46,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
 
-    public void onTapResult(String movieId, String mediaType) {
-        mView.navigateToDetails(movieId,mediaType);
+    public void onTapResult(String url) {
+        mView.navigateToDetails(url);
     }
 
     public void onResultListEndReached() {
-        SearchResultModel.getInstance().loadMoreResults(mQuery);
+        NewsModel.getInstance().loadMoreResults(mQuery);
     }
+
 }

@@ -29,7 +29,7 @@ public class NewsDBHelper extends SQLiteOpenHelper {
             NewsContract.SourceEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             NewsContract.SourceEntry.COLUMN_SOURCE_ID + " VARCHAR(256), " +
             NewsContract.SourceEntry.COLUMN_NAME + " TEXT, " +
-            " UNIQUE (" + NewsContract.SourceEntry.COLUMN_SOURCE_ID + ") ON CONFLICT REPLACE" +
+            " UNIQUE (" + NewsContract.SourceEntry.COLUMN_SOURCE_ID + ") ON CONFLICT IGNORE" +
             ");";
 
     public NewsDBHelper(Context context) {

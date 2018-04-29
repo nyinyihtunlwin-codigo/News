@@ -8,6 +8,7 @@ public class ConfigUtils {
 
     private static final String KEY_SEARCH_RESULT_PAGE_INDEX = "KEY_SEARCH_RESULT_PAGE_INDEX";
     private static final String KEY_NEWS_PAGE_INDEX = "KEY_NEWS_PAGE_INDEX";
+    private static final String KEY_SOURCE_LOADED = "KEY_SOURCE_LOADED";
 
     private SharedPreferences mSharedPreferences;
 
@@ -41,6 +42,15 @@ public class ConfigUtils {
 
     public int loadSearchResultPageIndex() {
         return mSharedPreferences.getInt(KEY_SEARCH_RESULT_PAGE_INDEX, 1);
+    }
+
+
+    public void saveSource(boolean load) {
+        mSharedPreferences.edit().putBoolean(KEY_SOURCE_LOADED, load).apply();
+    }
+
+    public boolean loadSource() {
+        return mSharedPreferences.getBoolean(KEY_SOURCE_LOADED, false);
     }
 
 }

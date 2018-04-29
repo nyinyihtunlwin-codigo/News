@@ -24,6 +24,8 @@ public class NewsModel {
 
     private static NewsModel objectInstance;
 
+    private String mQuery;
+
     public static NewsModel getInstance() {
         if (objectInstance == null) {
             objectInstance = new NewsModel();
@@ -79,8 +81,46 @@ public class NewsModel {
         if (AppUtils.getObjInstance().hasConnection()) {
             NewsDataAgentImpl.getObjectInstance().loadNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadNewsPageIndex(), "us");
         } else {
-            NewsEvents.RestAPIEvent event=new NewsEvents.RestAPIEvent("No internet connection.",loadingStatus);
+            NewsEvents.RestAPIEvent event = new NewsEvents.RestAPIEvent("No internet connection.", loadingStatus);
             EventBus.getDefault().post(event);
         }
+    }
+
+    public void startSearching(String query) {
+        ConfigUtils.getObjInstance().saveSearchResultPageIndex(1);
+        NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), query);
+        mQuery = query;
+    }
+
+    public void loadMoreResults(String mQuery) {
+        ConfigUtils.getObjInstance().saveSearchResultPageIndex(ConfigUtils.getObjInstance().loadSearchResultPageIndex() + 1);
+        if (mQuery != null) {
+            NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), mQuery);
+        }
+    }
+
+    public void loadSources() {
+        if (AppUtils.getObjInstance().hasConnection()) {
+            NewsDataAgentImpl.getObjectInstance().loadSources(AppConstants.API_KEY);
+        } else {
+            NewsEvents.RestAPIEvent event = new NewsEvents.RestAPIEvent("No internet connection.", AppConstants.KEY_START_LOADING);
+            EventBus.getDefault().post(event);
+        }
+    }
+
+    public void saveSourcesToDb(Context context, List<SourceVO> sources) {
+
+        List<ContentValues> sourceCVList = new ArrayList<>();
+        for (int index = 0; index < sources.size(); index++) {
+            SourceVO sourceVO = sources.get(index);
+            if (sourceVO != null) {
+                sourceCVList.add(sourceVO.parseToContentValues());
+            }
+        }
+
+        int insertedSources = context.getContentResolver().bulkInsert(NewsContract.SourceEntry.CONTENT_URI,
+                sourceCVList.toArray(new ContentValues[0]));
+        Log.d(NewsApp.LOG_TAG, "inserted Sources :" + insertedSources);
+
     }
 }

@@ -3,6 +3,7 @@ package com.nyinyihtunlwin.news.acitivities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -18,6 +19,7 @@ import com.nyinyihtunlwin.news.components.SmartRecyclerView;
 import com.nyinyihtunlwin.news.components.SmartScrollListener;
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
 import com.nyinyihtunlwin.news.delegates.NewsItemDelegate;
+import com.nyinyihtunlwin.news.mvp.presenters.SearchPresenter;
 import com.nyinyihtunlwin.news.mvp.views.SearchView;
 import com.nyinyihtunlwin.news.utils.AppUtils;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -48,6 +50,7 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
 
     private NewsAdapter mAdapter;
     private SmartScrollListener mScrollListener;
+    private SearchPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,10 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mPresenter = new SearchPresenter(this);
+        mPresenter.onCreate(this);
+
+
         mAdapter = new NewsAdapter(this, this);
         rvResults.setAdapter(mAdapter);
         rvResults.setLayoutManager(new LinearLayoutManager(this));
@@ -69,7 +76,8 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
         mScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
             @Override
             public void onListEndReached() {
-
+                showLoadMore();
+                mPresenter.onResultListEndReached();
             }
         });
 
@@ -84,12 +92,13 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
                     if (!etSearch.getText().toString().equals("")) {
                         String query = etSearch.getText().toString();
                         if (!query.equals("")) {
-                            // mAdapter.clearData();
+                            mAdapter.clearData();
                             hideSoftKeyboard(getApplicationContext());
                             if (AppUtils.getObjInstance().hasConnection()) {
-                                //     mPresenter.onTapSearch(query);
+                                mPresenter.onTapSearch(query);
                                 tvMessage.setText("searching...");
                             } else {
+                                tvMessage.setVisibility(View.VISIBLE);
                                 tvMessage.setText("No internet connection!");
                             }
                         } else {
@@ -101,6 +110,27 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
                 return false;
             }
         });
+    }
+
+    private void showLoadMore() {
+        Snackbar snackbar = Snackbar.make(rvResults, "loading news...", Snackbar.LENGTH_LONG);
+        View view = snackbar.getView();
+        TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        textView.setTextColor(getResources().getColor(R.color.accent));
+        snackbar.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPresenter.onStop();
     }
 
     @Override
@@ -117,13 +147,14 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
 
     @Override
     public void onTapNews(NewsVO news) {
-
+        mPresenter.onTapResult(news.getUrl());
     }
 
     @Override
     public void displaySearchResults(List<NewsVO> resultList) {
         loadingView.setVisibility(View.GONE);
         tvMessage.setVisibility(View.GONE);
+        mAdapter.appendNewData(resultList);
     }
 
     @Override
@@ -141,5 +172,6 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
     public void showErrorMsg(String message) {
         loadingView.setVisibility(View.GONE);
         tvMessage.setText(message);
+        tvMessage.setVisibility(View.VISIBLE);
     }
 }

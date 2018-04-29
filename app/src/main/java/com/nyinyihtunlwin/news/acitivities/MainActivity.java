@@ -17,12 +17,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.nyinyihtunlwin.news.R;
 import com.nyinyihtunlwin.news.adapters.NewsAdapter;
 import com.nyinyihtunlwin.news.components.EmptyViewPod;
 import com.nyinyihtunlwin.news.components.SmartRecyclerView;
 import com.nyinyihtunlwin.news.components.SmartScrollListener;
+import com.nyinyihtunlwin.news.data.models.NewsModel;
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
 import com.nyinyihtunlwin.news.delegates.NewsItemDelegate;
 import com.nyinyihtunlwin.news.events.NewsEvents;
@@ -73,8 +75,7 @@ public class MainActivity extends BaseActivity implements NewsView, LoaderManage
         mScrollListener = new SmartScrollListener(new SmartScrollListener.OnSmartScrollListener() {
             @Override
             public void onListEndReached() {
-                Snackbar.make(rvNews, "loading more news...", Snackbar.LENGTH_LONG)
-                        .show();
+                showLoadMore();
                 mPresenter.onListEndReached();
             }
         });
@@ -98,6 +99,15 @@ public class MainActivity extends BaseActivity implements NewsView, LoaderManage
         });
 
         getSupportLoaderManager().initLoader(AppConstants.NEWS_LOADER_ID, null, MainActivity.this);
+    }
+
+    private void showLoadMore() {
+        Snackbar snackbar = Snackbar.make(rvNews, "loading news...", Snackbar.LENGTH_LONG);
+        View view = snackbar.getView();
+        TextView textView = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        textView.setTextColor(getResources().getColor(R.color.accent));
+        snackbar.show();
     }
 
     @Override
