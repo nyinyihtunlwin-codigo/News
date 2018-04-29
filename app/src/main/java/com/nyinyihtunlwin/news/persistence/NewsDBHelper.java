@@ -27,7 +27,7 @@ public class NewsDBHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_SOURCE = "CREATE TABLE " + NewsContract.SourceEntry.TABLE_NAME + " (" +
             NewsContract.SourceEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            NewsContract.SourceEntry.COLUMN_SOURCE_ID + " VARCHAR(256), " +
+            NewsContract.SourceEntry.COLUMN_SOURCE_ID + " VARCHAR(256) NOT NULL, " +
             NewsContract.SourceEntry.COLUMN_NAME + " TEXT, " +
             " UNIQUE (" + NewsContract.SourceEntry.COLUMN_SOURCE_ID + ") ON CONFLICT IGNORE" +
             ");";

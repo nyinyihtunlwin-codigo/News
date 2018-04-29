@@ -14,7 +14,7 @@ public interface NewsAPI {
     Call<NewsResponse> loadNews(@Query("apiKey") String apiKey, @Query("page") Integer page, @Query("country") String country);
 
     @GET("v2/everything")
-    Call<NewsResponse> searchNews(@Query("apiKey") String apiKey, @Query("page") Integer page, @Query("q") String query);
+    Call<NewsResponse> searchNews(@Query("apiKey") String apiKey, @Query("page") Integer page, @Query("q") String query, @Query("sources") String sources);
 
     @GET("v2/sources")
     Call<SourceResponse> loadSources(@Query("apiKey") String apiKey, @Query("language") String language, @Query("country") String country);

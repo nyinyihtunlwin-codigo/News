@@ -66,8 +66,8 @@ public class NewsDataAgentImpl implements NewsDataAgent {
     }
 
     @Override
-    public void searchNews(String apiKey, int pageNo, String query) {
-        Call<NewsResponse> loadNewsCall = newsAPI.searchNews(apiKey, pageNo, query);
+    public void searchNews(String apiKey, int pageNo, String query, String source) {
+        Call<NewsResponse> loadNewsCall = newsAPI.searchNews(apiKey, pageNo, query, source);
         loadNewsCall.enqueue(new NewsCallback<NewsResponse>() {
             @Override
             public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
@@ -85,7 +85,7 @@ public class NewsDataAgentImpl implements NewsDataAgent {
 
     @Override
     public void loadSources(String apiKey) {
-        Call<SourceResponse> loadNewsCall = newsAPI.loadSources(apiKey, "us", "en");
+        Call<SourceResponse> loadNewsCall = newsAPI.loadSources(apiKey, "en", "us");
         loadNewsCall.enqueue(new NewsCallback<SourceResponse>() {
             @Override
             public void onResponse(Call<SourceResponse> call, Response<SourceResponse> response) {

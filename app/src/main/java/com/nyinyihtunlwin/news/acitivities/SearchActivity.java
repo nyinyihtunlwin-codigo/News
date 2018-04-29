@@ -2,14 +2,23 @@ package com.nyinyihtunlwin.news.acitivities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,18 +27,22 @@ import com.nyinyihtunlwin.news.adapters.NewsAdapter;
 import com.nyinyihtunlwin.news.components.SmartRecyclerView;
 import com.nyinyihtunlwin.news.components.SmartScrollListener;
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
+import com.nyinyihtunlwin.news.data.vos.SourceVO;
 import com.nyinyihtunlwin.news.delegates.NewsItemDelegate;
 import com.nyinyihtunlwin.news.mvp.presenters.SearchPresenter;
 import com.nyinyihtunlwin.news.mvp.views.SearchView;
+import com.nyinyihtunlwin.news.persistence.NewsContract;
+import com.nyinyihtunlwin.news.utils.AppConstants;
 import com.nyinyihtunlwin.news.utils.AppUtils;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchActivity extends BaseActivity implements NewsItemDelegate, SearchView {
+public class SearchActivity extends BaseActivity implements NewsItemDelegate, SearchView, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
@@ -48,9 +61,14 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
     @BindView(R.id.loading)
     AVLoadingIndicatorView loadingView;
 
+    @BindView(R.id.sp_sources)
+    AppCompatSpinner spSources;
+
     private NewsAdapter mAdapter;
     private SmartScrollListener mScrollListener;
     private SearchPresenter mPresenter;
+
+    private String source, query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +78,8 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
         setSupportActionBar(toolbar);
 
         ButterKnife.bind(this, this);
+        source = "";
+        query = "";
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -90,12 +110,12 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
             public boolean onEditorAction(TextView textView, int keyCode, KeyEvent keyEvent) {
                 if (keyCode == EditorInfo.IME_ACTION_SEARCH) {
                     if (!etSearch.getText().toString().equals("")) {
-                        String query = etSearch.getText().toString();
+                        query = etSearch.getText().toString();
                         if (!query.equals("")) {
                             mAdapter.clearData();
                             hideSoftKeyboard(getApplicationContext());
                             if (AppUtils.getObjInstance().hasConnection()) {
-                                mPresenter.onTapSearch(query);
+                                mPresenter.onTapSearch(query, source);
                                 tvMessage.setText("searching...");
                             } else {
                                 tvMessage.setVisibility(View.VISIBLE);
@@ -110,6 +130,8 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
                 return false;
             }
         });
+
+        getSupportLoaderManager().initLoader(AppConstants.SOURCES_LOADER_ID, null, SearchActivity.this);
     }
 
     private void showLoadMore() {
@@ -158,6 +180,52 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
     }
 
     @Override
+    public void displaySources(List<SourceVO> sourceList) {
+        final List<SourceVO> sources = new ArrayList<>();
+        sources.add(new SourceVO());
+        List<String> sourceNames = new ArrayList<>();
+        sourceNames.add("All");
+        for (SourceVO sourceVO : sourceList) {
+            if (sourceVO.getId() != null) {
+                sources.add(sourceVO);
+                sourceNames.add(sourceVO.getName());
+            }
+        }
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, sourceNames);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spSources.setAdapter(dataAdapter);
+        spSources.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) {
+                    source = "";
+                } else {
+                    source = sources.get(i).getId();
+                }
+                mAdapter.clearData();
+                hideSoftKeyboard(getApplicationContext());
+                if (AppUtils.getObjInstance().hasConnection()) {
+                    mPresenter.onTapSearch(query, source);
+                    tvMessage.setText("searching...");
+                } else {
+                    tvMessage.setVisibility(View.VISIBLE);
+                    tvMessage.setText("No internet connection!");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    @Override
     public void showLoding() {
         loadingView.setVisibility(View.VISIBLE);
     }
@@ -173,5 +241,26 @@ public class SearchActivity extends BaseActivity implements NewsItemDelegate, Se
         loadingView.setVisibility(View.GONE);
         tvMessage.setText(message);
         tvMessage.setVisibility(View.VISIBLE);
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        return new CursorLoader(getApplicationContext(),
+                NewsContract.SourceEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        mPresenter.onDataLoaded(getApplicationContext(), data);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
     }
 }

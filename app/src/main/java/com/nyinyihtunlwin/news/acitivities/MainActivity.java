@@ -1,5 +1,6 @@
 package com.nyinyihtunlwin.news.acitivities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -41,6 +42,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements NewsView, LoaderManager.LoaderCallbacks<Cursor>, NewsItemDelegate {
+
+    public static Intent newIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        return intent;
+    }
 
     @BindView(R.id.rv_news)
     SmartRecyclerView rvNews;
@@ -197,4 +203,16 @@ public class MainActivity extends BaseActivity implements NewsView, LoaderManage
         Intent intent = DetailsActivity.newIntent(getApplicationContext(), news.getUrl());
         startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+        System.exit(0);
+    }
+
 }

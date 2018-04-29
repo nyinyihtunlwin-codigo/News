@@ -37,8 +37,8 @@ public class NewsPresenter extends BasePresenter<NewsView> {
 
     public void onStartLoadingNews() {
         mView.showLoading();
-        NewsModel.getInstance().startLoadingNews();
         onLoadSources();
+        NewsModel.getInstance().startLoadingNews();
     }
 
     @Subscribe
@@ -62,8 +62,8 @@ public class NewsPresenter extends BasePresenter<NewsView> {
             mView.displayNews(newsList);
         } else {
             mView.showLoading();
-            NewsModel.getInstance().startLoadingNews();
             onLoadSources();
+            NewsModel.getInstance().startLoadingNews();
         }
     }
 

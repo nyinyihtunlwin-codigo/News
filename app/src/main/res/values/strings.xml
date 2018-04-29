@@ -8,4 +8,6 @@
     <string name="title_activity_details">Details</string>
     <string name="title_activity_search">Search</string>
     <string name="hint_search">Enter keywords</string>
+    <string name="news_for_me">News For Me</string>
+    <string name="version">Version 1.0</string>
 </resources>

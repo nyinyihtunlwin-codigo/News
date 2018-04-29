@@ -24,7 +24,7 @@ public class NewsModel {
 
     private static NewsModel objectInstance;
 
-    private String mQuery;
+    private String mQuery, mSource;
 
     public static NewsModel getInstance() {
         if (objectInstance == null) {
@@ -86,16 +86,17 @@ public class NewsModel {
         }
     }
 
-    public void startSearching(String query) {
+    public void startSearching(String query, String source) {
         ConfigUtils.getObjInstance().saveSearchResultPageIndex(1);
-        NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), query);
+        NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), query, source);
         mQuery = query;
+        mSource = source;
     }
 
     public void loadMoreResults(String mQuery) {
         ConfigUtils.getObjInstance().saveSearchResultPageIndex(ConfigUtils.getObjInstance().loadSearchResultPageIndex() + 1);
         if (mQuery != null) {
-            NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), mQuery);
+            NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), mQuery, mSource);
         }
     }
 
