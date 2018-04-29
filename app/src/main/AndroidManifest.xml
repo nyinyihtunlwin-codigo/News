@@ -36,6 +36,10 @@
             android:name=".acitivities.DetailsActivity"
             android:label="@string/title_activity_details"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".acitivities.SearchActivity"
+            android:label="@string/title_activity_search"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
