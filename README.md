@@ -1,2 +1,2 @@
 # News
-News App.
+News from https://newsapi.org/.
