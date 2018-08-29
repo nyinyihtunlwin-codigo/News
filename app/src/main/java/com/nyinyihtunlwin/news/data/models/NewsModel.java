@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
+import com.nyinyihtunlwin.news.BuildConfig;
 import com.nyinyihtunlwin.news.NewsApp;
 import com.nyinyihtunlwin.news.data.vos.NewsVO;
 import com.nyinyihtunlwin.news.data.vos.SourceVO;
@@ -79,7 +80,7 @@ public class NewsModel {
 
     public void loadNews(int loadingStatus) {
         if (AppUtils.getObjInstance().hasConnection()) {
-            NewsDataAgentImpl.getObjectInstance().loadNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadNewsPageIndex(), "us");
+            NewsDataAgentImpl.getObjectInstance().loadNews(BuildConfig.APIKEY, ConfigUtils.getObjInstance().loadNewsPageIndex(), "us");
         } else {
             NewsEvents.RestAPIEvent event = new NewsEvents.RestAPIEvent("No internet connection.", loadingStatus);
             EventBus.getDefault().post(event);
@@ -88,7 +89,7 @@ public class NewsModel {
 
     public void startSearching(String query, String source) {
         ConfigUtils.getObjInstance().saveSearchResultPageIndex(1);
-        NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), query, source);
+        NewsDataAgentImpl.getObjectInstance().searchNews(BuildConfig.APIKEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), query, source);
         mQuery = query;
         mSource = source;
     }
@@ -96,13 +97,13 @@ public class NewsModel {
     public void loadMoreResults(String mQuery) {
         ConfigUtils.getObjInstance().saveSearchResultPageIndex(ConfigUtils.getObjInstance().loadSearchResultPageIndex() + 1);
         if (mQuery != null) {
-            NewsDataAgentImpl.getObjectInstance().searchNews(AppConstants.API_KEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), mQuery, mSource);
+            NewsDataAgentImpl.getObjectInstance().searchNews(BuildConfig.APIKEY, ConfigUtils.getObjInstance().loadSearchResultPageIndex(), mQuery, mSource);
         }
     }
 
     public void loadSources() {
         if (AppUtils.getObjInstance().hasConnection()) {
-            NewsDataAgentImpl.getObjectInstance().loadSources(AppConstants.API_KEY);
+            NewsDataAgentImpl.getObjectInstance().loadSources(BuildConfig.APIKEY);
         } else {
             NewsEvents.RestAPIEvent event = new NewsEvents.RestAPIEvent("No internet connection.", AppConstants.KEY_START_LOADING);
             EventBus.getDefault().post(event);
